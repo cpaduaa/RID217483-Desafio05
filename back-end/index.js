@@ -22,22 +22,29 @@ app.get('/livros/:id', (req, res) => {
 });
 
 app.post('/livros', (req, res) => {
-  const { titulo, num_paginas, isbn, editora } = req.body;
+  const livrosRecebidos = Array.isArray(req.body) ? req.body : [req.body];
+  const livrosAdicionados = [];
 
-  if (!titulo || !num_paginas || !isbn || !editora) {
-    return res.status(400).json({ mensagem: 'Preencha todos os campos' });
+  for (const livro of livrosRecebidos) {
+    const { titulo, num_paginas, isbn, editora } = livro;
+
+    if (!titulo || !num_paginas || !isbn || !editora) {
+      return res.status(400).json({ mensagem: 'Preencha todos os campos' });
+    }
+
+    const novoLivro = {
+      id: uuidv4(),
+      titulo,
+      num_paginas,
+      isbn,
+      editora
+    };
+
+    livros.push(novoLivro);
+    livrosAdicionados.push(novoLivro);
   }
 
-  const novoLivro = {
-    id: uuidv4(),
-    titulo,
-    num_paginas,
-    isbn,
-    editora
-  };
-
-  livros.push(novoLivro);
-  res.status(201).json(novoLivro);
+  res.status(201).json(livrosAdicionados);
 });
 
 app.put('/livros/:id', (req, res) => {
@@ -73,4 +80,5 @@ app.delete('/livros/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
 
