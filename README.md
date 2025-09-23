@@ -1,4 +1,3 @@
-# projeto-react-api-node
-Projeto em React com API simples em Node.
+projeto-react-api-node
 
-netlify https://biblioteca-dnc-desafio5.netlify.app/
+Projeto em React com API simples em Node.
