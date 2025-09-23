@@ -6,10 +6,10 @@ import "./index.scss";
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [formBook, setFormBook] = useState({
-    title: "",
-    pages: "",
+    titulo: "",
+    num_paginas: "",
     isbn: "",
-    publisher: "",
+    editora: "",
   });
   const [editingBookId, setEditingBookId] = useState(null);
 
@@ -19,10 +19,10 @@ const Home = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await api.get("/books");
+      const response = await api.get("/livros");
       setBooks(response.data);
     } catch (error) {
-      console.error("Error fetching books:", error);
+      console.error("Erro ao buscar livros:", error);
     }
   };
 
@@ -31,41 +31,41 @@ const Home = () => {
   };
 
   const handleAddBook = async () => {
-    if (!formBook.title || !formBook.pages || !formBook.isbn || !formBook.publisher) {
-      alert("Please fill all fields!");
+    if (!formBook.titulo || !formBook.num_paginas || !formBook.isbn || !formBook.editora) {
+      alert("Preencha todos os campos!");
       return;
     }
 
     try {
       if (editingBookId) {
-        await api.put(`/books/${editingBookId}`, formBook);
+        await api.put(`/livros/${editingBookId}`, formBook);
         setEditingBookId(null);
       } else {
-        await api.post("/books", formBook);
+        await api.post("/livros", formBook);
       }
-      setFormBook({ title: "", pages: "", isbn: "", publisher: "" });
+      setFormBook({ titulo: "", num_paginas: "", isbn: "", editora: "" });
       fetchBooks();
     } catch (error) {
-      console.error("Error saving book:", error);
+      console.error("Erro ao salvar livro:", error);
     }
   };
 
   const handleEdit = (book) => {
     setEditingBookId(book.id);
     setFormBook({
-      title: book.title,
-      pages: book.pages,
+      titulo: book.titulo,
+      num_paginas: book.num_paginas,
       isbn: book.isbn,
-      publisher: book.publisher,
+      editora: book.editora,
     });
   };
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/books/${id}`);
+      await api.delete(`/livros/${id}`);
       fetchBooks();
     } catch (error) {
-      console.error("Error deleting book:", error);
+      console.error("Erro ao excluir livro:", error);
     }
   };
 
@@ -78,16 +78,33 @@ const Home = () => {
         <h1>{editingBookId ? "Editar Livro" : "Cadastrar Novo Livro"}</h1>
         <div className="form-group">
           <label>Título</label>
-          <input name="title" value={formBook.title} onChange={handleChange} />
+          <input
+            name="titulo"
+            value={formBook.titulo}
+            onChange={handleChange}
+          />
 
           <label>Número de Páginas</label>
-          <input name="pages" type="number" value={formBook.pages} onChange={handleChange} />
+          <input
+            name="num_paginas"
+            type="number"
+            value={formBook.num_paginas}
+            onChange={handleChange}
+          />
 
           <label>ISBN</label>
-          <input name="isbn" value={formBook.isbn} onChange={handleChange} />
+          <input
+            name="isbn"
+            value={formBook.isbn}
+            onChange={handleChange}
+          />
 
           <label>Editora</label>
-          <input name="publisher" value={formBook.publisher} onChange={handleChange} />
+          <input
+            name="editora"
+            value={formBook.editora}
+            onChange={handleChange}
+          />
 
           <button onClick={handleAddBook}>
             {editingBookId ? "Salvar Alterações" : "Adicionar Livro"}
@@ -99,9 +116,9 @@ const Home = () => {
         <ul>
           {books.map((book) => (
             <li key={book.id}>
-              <strong>{book.title}</strong>
-              <span>{book.publisher}</span>
-              <span>{book.pages} páginas</span>
+              <strong>{book.titulo}</strong>
+              <span>{book.editora}</span>
+              <span>{book.num_paginas} páginas</span>
               <span>ISBN: {book.isbn}</span>
 
               <div className="botoes">

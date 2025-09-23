@@ -9,48 +9,68 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-let books = [];
+let livros = [];
 
-app.get('/books', (req, res) => {
-  res.json(books);
+app.get('/livros', (req, res) => {
+  res.json(livros);
 });
 
-app.get('/books/:id', (req, res) => {
-  const book = books.find(b => b.id === req.params.id);
-  if (!book) return res.status(404).json({ message: 'Book not found' });
-  res.json(book);
+app.get('/livros/:id', (req, res) => {
+  const livro = livros.find(l => l.id === req.params.id);
+  if (!livro) return res.status(404).json({ mensagem: 'Livro não encontrado' });
+  res.json(livro);
 });
 
-app.post('/books', (req, res) => {
-  const { title, pages, isbn, publisher } = req.body;
-  const newBook = {
+app.post('/livros', (req, res) => {
+  const { titulo, num_paginas, isbn, editora } = req.body;
+
+  if (!titulo || !num_paginas || !isbn || !editora) {
+    return res.status(400).json({ mensagem: 'Preencha todos os campos' });
+  }
+
+  const novoLivro = {
     id: uuidv4(),
-    title,
-    pages,
+    titulo,
+    num_paginas,
     isbn,
-    publisher
+    editora
   };
-  books.push(newBook);
-  res.status(201).json(newBook);
+
+  livros.push(novoLivro);
+  res.status(201).json(novoLivro);
 });
 
-app.put('/books/:id', (req, res) => {
-  const { title, pages, isbn, publisher } = req.body;
-  const bookIndex = books.findIndex(b => b.id === req.params.id);
-  if (bookIndex === -1) return res.status(404).json({ message: 'Book not found' });
+app.put('/livros/:id', (req, res) => {
+  const { titulo, num_paginas, isbn, editora } = req.body;
+  const livroIndex = livros.findIndex(l => l.id === req.params.id);
 
-  books[bookIndex] = { id: req.params.id, title, pages, isbn, publisher };
-  res.json(books[bookIndex]);
+  if (livroIndex === -1) {
+    return res.status(404).json({ mensagem: 'Livro não encontrado' });
+  }
+
+  livros[livroIndex] = {
+    id: req.params.id,
+    titulo,
+    num_paginas,
+    isbn,
+    editora
+  };
+
+  res.json(livros[livroIndex]);
 });
 
-app.delete('/books/:id', (req, res) => {
-  const bookIndex = books.findIndex(b => b.id === req.params.id);
-  if (bookIndex === -1) return res.status(404).json({ message: 'Book not found' });
+app.delete('/livros/:id', (req, res) => {
+  const livroIndex = livros.findIndex(l => l.id === req.params.id);
 
-  const deletedBook = books.splice(bookIndex, 1);
-  res.json(deletedBook[0]);
+  if (livroIndex === -1) {
+    return res.status(404).json({ mensagem: 'Livro não encontrado' });
+  }
+
+  const livroRemovido = livros.splice(livroIndex, 1);
+  res.json(livroRemovido[0]);
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+

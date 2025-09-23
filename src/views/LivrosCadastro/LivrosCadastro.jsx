@@ -1,72 +1,73 @@
-import {useState} from 'react'
-import Header from '../../components/Header/Header'
-import "./index.scss"
-import SubmenuLivros from '../../components/SubmenuLivros/SubmenuLivros'
-import { LivrosService } from '../../api/LivrosService'
+import { useState } from "react";
+import { LivrosService } from "../../services/LivrosService";
+import { useNavigate } from "react-router-dom";
 
-const LivrosCadastro = () => {
-  
-  const [livro, setLivro] = useState([])
+export default function LivrosCadastro() {
+  const [titulo, setTitulo] = useState("");
+  const [num_paginas, setNumPaginas] = useState("");
+  const [isbn, setIsbn] = useState("");
+  const [editora, setEditora] = useState("");
 
-  async function createLivro(){
-    const body = {
-        id:Number(livro.id),
-        titulo:livro.titulo,
-        num_paginas: Number(livro.num_paginas),
-        isbn: livro.isbn,
-        editora: livro.editora
-      }
-      if(livro.id!=undefined && livro.id!='' && livro.titulo!=undefined && livro.titulo!='' && livro.num_paginas!=undefined && livro.num_paginas!='' && livro.isbn !=undefined && livro.isbn !='' && livro.editora !=undefined && livro.editora !=''){
-      await LivrosService.createLivro(body)
-      .then((response)=>{
-        alert(response.data)
-        document.getElementById('formulario').reset
-      })
-      .catch(({response:{data,status}})=>{
-        alert(`${status} - ${data}`)      
-      });
+  const navigate = useNavigate();
+
+  const salvarLivro = async (e) => {
+    e.preventDefault();
+    try {
+      await LivrosService.create({ titulo, num_paginas, isbn, editora });
+      navigate("/livros");
+    } catch (error) {
+      console.error("Erro ao cadastrar livro:", error);
     }
-
-  }
+  };
 
   return (
-  <>
-    <Header/>    
-    <SubmenuLivros/>
-    <div className='livrosCadastro'>
-        <h1>Cadastro de Livros</h1>
-        <div>          
-          <form id="formulario">
-          <div className='form-group'>
-            <label>Id</label>
-            <input type="text" id='id' required onChange={(event)=>{ setLivro({...livro, id: event.target.value})}} ></input>
-          </div>
-          <div className='form-group'>
-            <label>Titulo</label>
-            <input type="text" id='titulo' required onChange={(event)=>{ setLivro({...livro, titulo: event.target.value})}}></input>
-          </div>
-          <div className='form-group'>
-            <label>Número de Páginas</label>
-            <input type="text" id='num' required onChange={(event)=>{ setLivro({...livro, num_paginas: event.target.value})}}></input>
-          </div>
-          <div className='form-group'>
-            <label>ISBN</label>
-            <input type="text" id='isbn' required onChange={(event)=>{ setLivro({...livro, isbn: event.target.value})}}></input>
-          </div>
-          <div className='form-group'>
-            <label>Editora</label>
-            <input type="text" id='editora' required onChange={(event)=>{ setLivro({...livro, editora: event.target.value})}}></input>
-          </div> 
-          <div className='form-group'>
-            <button onClick={()=>{
-              createLivro()
-            }}>Cadastrar Livro</button>  
-          </div>         
-          </form>
+    <div className="container">
+      <h1>Cadastrar Livro</h1>
+      <form onSubmit={salvarLivro}>
+        <div className="mb-3">
+          <label className="form-label">Título</label>
+          <input
+            type="text"
+            className="form-control"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            required
+          />
         </div>
+        <div className="mb-3">
+          <label className="form-label">Número de Páginas</label>
+          <input
+            type="number"
+            className="form-control"
+            value={num_paginas}
+            onChange={(e) => setNumPaginas(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">ISBN</label>
+          <input
+            type="text"
+            className="form-control"
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Editora</label>
+          <input
+            type="text"
+            className="form-control"
+            value={editora}
+            onChange={(e) => setEditora(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-success">
+          Salvar
+        </button>
+      </form>
     </div>
-  </>)
-  
+  );
 }
-
-export default LivrosCadastro
